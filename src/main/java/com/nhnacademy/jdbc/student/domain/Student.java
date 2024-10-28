@@ -54,11 +54,18 @@ public class Student {
 
     @Override
     public int hashCode() {
-        return super.hashCode();
+        return Objects.hash(id, name, gender, age);
     }
 
     @Override
     public boolean equals(Object obj) {
-        return super.equals(obj);
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Student student = (Student) obj;
+        return Objects.equals(id, student.id) && Objects.equals(name, student.name) && gender == student.gender && Objects.equals(age, student.age);
     }
 }
