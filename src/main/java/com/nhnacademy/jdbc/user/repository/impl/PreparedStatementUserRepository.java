@@ -45,6 +45,30 @@ public class PreparedStatementUserRepository implements UserRepository {
     @Override
     public Optional<User> findById(String userId) {
         //todo#12-PreparedStatement-회원조회
+        String sql = String.format("select * from jdbc_users where id=?");
+        log.debug("findByUserId:{}", sql);
+
+        ResultSet rs = null;
+        try(Connection connection = DbUtils.getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql);
+        ){
+            statement.setString(1, userId);
+            rs = statement.executeQuery();
+            if (rs.next()) {
+                return Optional.of(
+                        new User(rs.getString("user_id"),rs.getString("user_name"),rs.getString("user_password"))
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         return Optional.empty();
     }
@@ -52,18 +76,62 @@ public class PreparedStatementUserRepository implements UserRepository {
     @Override
     public int save(User user) {
         //todo#13-PreparedStatement-회원저장
-        return 0;
+        String sql = String.format("insert into jdbc_users(user_id,user_name,user_password) values(?,?,?)");
+        log.debug("save:{}", sql);
+
+        try(Connection connection = DbUtils.getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql);
+        ){
+            statement.setString(1, user.getUserId());
+            statement.setString(2, user.getUserPassword());
+            statement.setString(3, user.getUserPassword());
+
+            int result = statement.executeUpdate();
+            log.debug("save-result:{}", result);
+            return result;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public int updateUserPasswordByUserId(String userId, String userPassword) {
         //todo#14-PreparedStatement-회원정보 수정
-        return 0;
+        String sql = String.format("update jdbc_users set user_password=? where id=?");
+        log.debug("updateUserPasswordByUserId:{}", sql);
+
+        try(Connection connection = DbUtils.getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql);
+        ){
+            statement.setString(1, userPassword);
+            statement.setString(2, userId);
+
+            int result = statement.executeUpdate();
+            log.debug("update-result:{}", result);
+            return result;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public int deleteByUserId(String userId) {
         //todo#15-PreparedStatement-회원삭제
-        return 0;
+        String sql = String.format("delete from jdbc_users where id=?");
+        log.debug("deleteByUserId:{}", sql);
+
+        try(Connection connection = DbUtils.getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql);
+        ){
+            statement.setString(1, userId);
+            int result = statement.executeUpdate();
+            log.debug("delete-result:{}", result);
+            return result;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 }
