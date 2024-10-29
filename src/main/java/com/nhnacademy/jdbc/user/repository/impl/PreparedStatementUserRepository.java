@@ -13,7 +13,7 @@ public class PreparedStatementUserRepository implements UserRepository {
     @Override
     public Optional<User> findByUserIdAndUserPassword(String userId, String userPassword) {
         //todo#11 -PreparedStatement- 아이디 , 비밀번호가 일치하는 회원조회
-        String sql = String.format("select * from jdbc_users where id=? and user_password=?");
+        String sql = String.format("select * from jdbc_users where user_id=? and user_password=?");
         log.debug("findByUserIdAndUserPassword:{}", sql);
 
         ResultSet rs = null;
@@ -45,7 +45,7 @@ public class PreparedStatementUserRepository implements UserRepository {
     @Override
     public Optional<User> findById(String userId) {
         //todo#12-PreparedStatement-회원조회
-        String sql = String.format("select * from jdbc_users where id=?");
+        String sql = String.format("select * from jdbc_users where user_id=?");
         log.debug("findByUserId:{}", sql);
 
         ResultSet rs = null;
@@ -83,7 +83,7 @@ public class PreparedStatementUserRepository implements UserRepository {
             PreparedStatement statement = connection.prepareStatement(sql);
         ){
             statement.setString(1, user.getUserId());
-            statement.setString(2, user.getUserPassword());
+            statement.setString(2, user.getUserName());
             statement.setString(3, user.getUserPassword());
 
             int result = statement.executeUpdate();
@@ -98,7 +98,7 @@ public class PreparedStatementUserRepository implements UserRepository {
     @Override
     public int updateUserPasswordByUserId(String userId, String userPassword) {
         //todo#14-PreparedStatement-회원정보 수정
-        String sql = String.format("update jdbc_users set user_password=? where id=?");
+        String sql = String.format("update jdbc_users set user_password=? where user_id=?");
         log.debug("updateUserPasswordByUserId:{}", sql);
 
         try(Connection connection = DbUtils.getConnection();
@@ -119,7 +119,7 @@ public class PreparedStatementUserRepository implements UserRepository {
     @Override
     public int deleteByUserId(String userId) {
         //todo#15-PreparedStatement-회원삭제
-        String sql = String.format("delete from jdbc_users where id=?");
+        String sql = String.format("delete from jdbc_users where user_id=?");
         log.debug("deleteByUserId:{}", sql);
 
         try(Connection connection = DbUtils.getConnection();
